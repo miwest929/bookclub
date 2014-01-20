@@ -4,7 +4,9 @@
 <meta charset="utf-8">
 <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
 <link href='css/app.css' rel='stylesheet'>
-<title>Hecuba</title>
+<link href='css/bootstrap.css' rel='stylesheet'>
+<link href='css/bootstrap-theme.css' rel='stylesheet'>
+<title>Readings</title>
 
 <style type='text/css'>
   body {
@@ -17,7 +19,12 @@
   }
 
   .book-info {
-    padding-bottom: 10px;
+    padding-bottom: 40px;
+    padding-left: 0px;
+  }
+
+  .book-field {
+    padding-right: 75px;
   }
 
   progress {
@@ -27,14 +34,12 @@
     background-color: #f3f3f3; 
   }
 
-  object {
+  input {
+    float: left;
     width: 50px;
     height: 50px;
-  }
-
-  object.booklink {
-    float: left;
-    padding-right: 10px;
+    position: relative;
+    top: 10px;
   }
 
   object.header-svg {
@@ -45,34 +50,46 @@
 </style>
 </head>
 <body>
-<script type='text/x-handlebars' id='application'>
-  <div class='main'>
-    <h1>Reading Leaderboard<object type="image/svg+xml" data="charts.svg" class="header-svg"></object></h1>
-    {{outlet}}
-  </div>
-</script>
+  <script type='text/x-handlebars' id='application'>
+    <div class='main'>
+      <h1>Reading Leaderboard<object type="image/svg+xml" data="charts.svg" class="header-svg"></object></h1>
+      {{outlet}}
+    </div>
+  </script>
 
-<script type='text/x-handlebars' id='books'>
+  <script type='text/x-handlebars' id='books'>
     <ul class="books-listing">
-    {{#each model}}
-      {{#link-to 'book' this}}
-      <object type="image/svg+xml" data="readbook.svg" class="booklink"></object>
-      {{/link-to}}
-      <li class='book-info'>
-        <b>{{title}}</b> by <b>{{author}}</b>
-        <div>
-          <progress max="{{unbound pagesTotal}}" value="{{unbound pagesRead}}"></progress>
-          <span><i>{{pagesRead}}/{{pagesTotal}}</i></span>
-        </div>
-      </li>
-    {{/each}}
+      {{each model itemController="book" itemViewClass="App.BookView"}}
     </ul>
-</script>
+    <form class="form-inline" role="form">
+      <div class="form-group">
+        {{input type=text class="form-control" value=title placeholder="Enter title here..."}}
+      </div>
+      <div class="form-group">
+        {{input type=text class="form-control" value=author placeholder="Enter author here..."}}
+      </div>
+      <div class="form-group">
+        {{input type=text class="form-control" value=pagesTotal placeholder="Enter total pages here..."}}
+      </div>
+      <button class="btn btn-default" {{action addNewBook}}>Add</button>
+    </form>
+    <div class="has-error"><span class="control-label">{{#if errors}} {{errors}} {{/if}}</span></div>
+  </script>
 
-<script src="js/shared/jquery-2.0.3.min.js"></script>
-<script src="js/shared/handlebars-v1.3.0.js"></script>
-<script src="js/shared/ember.js"></script>
-<script src="http://builds.emberjs.com/beta/ember-data.js"></script>
-<script src="js/app.js"></script>
+  <script type='text/x-handlebars' id='book'>
+    {{input value=newPages action="report"}}
+    <b>{{title}}</b> by <b>{{author}}</b>
+    <div>
+      <progress {{bind-attr max="pagesTotal"}} {{bind-attr value="pagesRead"}}></progress>
+      <span><i>{{pagesRead}}</i><b>/</b><i>{{pagesTotal}}</i> (<b>{{percentage}}%</b>)</span>
+    </div>
+    <div class="has-error"><span class="control-label">{{#if errors}} {{errors}} {{/if}}</span></div>
+  </script>
+
+  <script src="js/shared/jquery-2.0.3.min.js"></script>
+  <script src="js/shared/handlebars-v1.3.0.js"></script>
+  <script src="js/shared/ember.js"></script>
+  <script src="http://builds.emberjs.com/beta/ember-data.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
