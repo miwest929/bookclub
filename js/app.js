@@ -26,42 +26,6 @@ var isNormalInt = function(s) {
   return String(n) === s && n >= 0;
 }
 
-//Create books data
-// 1/11/2013 => 36
-// 1/12/2013 => 38
-var reading_data = [{
-  id: "1",
-  title: "Darwin among the Machines",
-  author: "George Dyson",
-  pagesRead: 38,
-  pagesTotal: 278
-},
-{
-  id: "2",
-  title: "A People's History of the United States",
-  author: "Howard Zinn",
-  pagesRead: 96,
-  pagesTotal: 688
-},
-{
-  id: "3",
-  title: "Algorithmic Graph Theory",
-  author: "Alan Gibbons",
-  pagesRead: 35,
-  pagesTotal: 252
-},
-{
-  id: "4",
-  title: "The Ultimate Hitchhiker's Guide to the Galaxy",
-  author: "Douglas Adams",
-  pagesRead: 515,
-  pagesTotal: 815
-}];
-
-for (index = 0; index < reading_data.length; index++) {
-  books.pushObject(App.Book.create(reading_data[index]));
-}
-
 App.Router.map(function() {
   this.resource('books', function() {
     this.resource('book', {path: '/:book_id'});
@@ -107,6 +71,23 @@ App.BooksController = Ember.ArrayController.extend({
       var pagesTotal = this.get("pagesTotal"); 
 
       if (title && author && pagesTotal) {
+        $.ajax({
+          url: 'http://localhost:9494/book',
+          type: 'post',
+          data: {
+            title: title,
+            author: author,
+            pagesTotal: pagesTotal
+          },
+          headers: {
+            "Access-Control-Allow-Origin": "*"
+          },
+          dataType: 'json',
+          success: function (data) {
+            console.info(data);
+          }
+        });
+
         books.pushObject(App.Book.create({
           id: books.length,
           title: title,
@@ -144,3 +125,24 @@ App.BookView = Ember.View.extend({
   tagName: "li",
   classNames: ['book-info']
 });
+
+$.getJSON("http://localhost:9494/books").then(
+  function(response) {
+    response.data.forEach(function(b) {
+      var book = App.Book.create({
+        id: b["id"],
+        title: b["title"],
+        author: b["author"],
+        pagesTotal: b["pagesTotal"]
+      });
+
+      var pagesRead = 0;
+      b.readings.forEach(function(r) {
+        pagesRead += r["pagesCount"]
+      });
+      book["pagesRead"] = pagesRead;
+
+      books.pushObject(book);
+    });
+  }
+);

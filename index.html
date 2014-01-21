@@ -47,12 +47,21 @@
     width: 40px;
     height: 40px;
   }
+
+  .add-book-btn {
+    position: relative;
+    top: 9px;
+  }
 </style>
 </head>
 <body>
   <script type='text/x-handlebars' id='application'>
     <div class='main'>
-      <h1>Reading Leaderboard<object type="image/svg+xml" data="charts.svg" class="header-svg"></object></h1>
+      <h1>Reading Leaderboard
+        {{#link-to action="graph"}}
+          <object type="image/svg+xml" data="charts.svg" class="header-svg"></object>
+        {{/link-to}}
+      </h1>
       {{outlet}}
     </div>
   </script>
@@ -71,7 +80,7 @@
       <div class="form-group">
         {{input type=text class="form-control" value=pagesTotal placeholder="Enter total pages here..."}}
       </div>
-      <button class="btn btn-default" {{action addNewBook}}>Add</button>
+      <button class="btn btn-default add-book-btn" {{action addNewBook}}>Add</button>
     </form>
     <div class="has-error"><span class="control-label">{{#if errors}} {{errors}} {{/if}}</span></div>
   </script>
